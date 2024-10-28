@@ -1,0 +1,42 @@
+version: "3.1"
+actions:
+  - action_check_sufficient_funds
+
+slots:
+  recipient:
+    type: text
+    mappings:
+      - type: from_llm
+  amount:
+    type: float
+    mappings:
+      - type: from_llm
+  final_confirmation:
+    type: bool
+    mappings:
+      - type: from_llm
+  has_sufficient_funds:
+    type: bool
+    mappings:
+      - type: custom
+
+responses:
+  utter_insufficient_funds:
+    - text: "I'm sorry, but {recipient} does not have sufficient balance."
+    
+  utter_ask_final_confirmation:
+    - text: "Are you sure you want to send {amount} to {recipient}?"
+
+  utter_transfer_cancelled:
+    - text: "Your transfer has been cancelled."
+
+  utter_ask_recipient:
+    - text: "Who would you like to send money to?"
+
+  utter_ask_amount:
+    - text: "How much money would you like to send?"
+
+  utter_transfer_complete:
+    - text: "All done. {amount} has been sent to {recipient}."
+
+
