@@ -1,6 +1,9 @@
 version: "3.1"
 actions:
   - action_check_sufficient_funds
+  - action_generate_receipt
+  - action_set_user_info
+  - action_check_balance
 
 slots:
   recipient:
@@ -19,13 +22,26 @@ slots:
     type: bool
     mappings:
       - type: custom
+  receipt_preference:
+    type: bool
+    mappings:
+      - type: from_llm
+  user:
+    type: any
+
 
 responses:
   utter_insufficient_funds:
-    - text: "I'm sorry, but {recipient} does not have sufficient balance."
+    - text: "I'm sorry, but you don't have sufficient balance."
     
   utter_ask_final_confirmation:
     - text: "Are you sure you want to send {amount} to {recipient}?"
+
+  utter_ask_receipt_preference:
+   - text: "Do you want a receipt for this transfer?"
+
+  utter_no_receipt:
+   - text: "No receipt will be sent, have fun with our services."
 
   utter_transfer_cancelled:
     - text: "Your transfer has been cancelled."

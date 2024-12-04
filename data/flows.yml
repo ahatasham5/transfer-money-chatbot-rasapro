@@ -1,24 +1,49 @@
 flows:
   transfer_money:
     description: This flow lets users send money to friends and family.
+    name: transfer money
+    always_include_in_prompt: True
     steps:
+      - action: action_set_user_info
       - collect: recipient
-      - collect: amount
+        description: the person who will receive the money
+      - id: ask_amount
+        collect: amount
         description: the number of BDT Taka to send
       - action: action_check_sufficient_funds
         next:
           - if: not slots.has_sufficient_funds
             then:
               - action: utter_insufficient_funds
-                next: END
+              - set_slots:
+                  - amount: null
+                  - has_sufficient_funds: null
+                next: ask_amount
           - else: final_confirmation
-      - collect: final_confirmation
-        id: final_confirmation
+      - id: final_confirmation
+        collect: final_confirmation
+        description: accepts True or False
+        ask_before_filling: true
         next:
           - if: not slots.final_confirmation
             then:
               - action: utter_transfer_cancelled
                 next: END
-          - else: transfer_successful
-      - action: utter_transfer_complete
-        id: transfer_successful
+          - else: execute_transfer
+      - id: execute_transfer
+        action: utter_transfer_complete
+      - collect: receipt_preference
+        next:
+          - if: not slots.receipt_preference
+            then:
+              - action: utter_no_receipt
+                next: END
+          - else:
+              - action: action_generate_receipt
+                next: END
+
+  check_balance:
+    name: check your balance
+    description: check the user's account balance
+    steps:
+      - action: action_check_balance
